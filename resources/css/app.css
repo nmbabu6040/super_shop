@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Dark mode is controlled by a "dark" class on <html> (set by the theme toggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens as plain CSS variables.
+ * Brand colours are variables on purpose: in a later phase the admin
+ * "Appearance Settings" will inject overrides for --brand-* from the database,
+ * so the primary colour can change without rebuilding assets.
+ */
+:root {
+    --brand-50: #effcf8;
+    --brand-100: #d3f8ec;
+    --brand-200: #a9f0db;
+    --brand-300: #71e2c6;
+    --brand-400: #3acdad;
+    --brand-500: #1bb294;
+    --brand-600: #0f9179;
+    --brand-700: #0f7464;
+    --brand-800: #115c50;
+    --brand-900: #124c43;
+
+    --accent-400: #fbbf24;
+    --accent-500: #f59e0b;
+    --accent-600: #d97706;
+
+    --surface: #f6f8fa;
+    --surface-raised: #ffffff;
+    --ink: #0f172a;
+    --ink-muted: #526074;
+    --line: #e2e8f0;
+}
+
+.dark {
+    --surface: #0a1020;
+    --surface-raised: #111a2e;
+    --ink: #e8edf5;
+    --ink-muted: #9aa8bd;
+    --line: #223049;
+}
+
+@theme inline {
+    --color-brand-50: var(--brand-50);
+    --color-brand-100: var(--brand-100);
+    --color-brand-200: var(--brand-200);
+    --color-brand-300: var(--brand-300);
+    --color-brand-400: var(--brand-400);
+    --color-brand-500: var(--brand-500);
+    --color-brand-600: var(--brand-600);
+    --color-brand-700: var(--brand-700);
+    --color-brand-800: var(--brand-800);
+    --color-brand-900: var(--brand-900);
+
+    --color-accent-400: var(--accent-400);
+    --color-accent-500: var(--accent-500);
+    --color-accent-600: var(--accent-600);
+
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-raised);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-line: var(--line);
+}
+
+@theme {
+    /* Inter has no Bengali glyphs, so the browser falls back to Noto Sans Bengali per character. */
+    --font-sans:
+        "Inter Variable", "Noto Sans Bengali", ui-sans-serif, system-ui,
+        sans-serif;
+
+    --radius-card: 1rem;
+    --shadow-card:
+        0 1px 2px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.06);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer components {
+    .surface-card {
+        @apply rounded-card border border-line bg-surface-raised shadow-card;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500;
+    }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white hover:bg-brand-700;
+    }
+
+    .btn-ghost {
+        @apply border border-line bg-surface-raised text-ink hover:bg-surface;
+    }
+}
