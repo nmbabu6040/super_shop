@@ -5,6 +5,19 @@
                 {{ config('app.name') }}
             </a>
             <div class="flex items-center gap-2">
+                @auth
+                    <a href="{{ app(\App\Support\Auth\PostLoginRedirector::class)->urlFor(auth()->user()) }}"
+                        class="btn btn-ghost">
+                        {{ __('auth.my_account') }}
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-ghost">{{ __('auth.logout') }}</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-ghost">{{ __('auth.sign_in') }}</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">{{ __('auth.create_account_button') }}</a>
+                @endauth
                 <x-ui.language-switcher />
                 <x-ui.theme-toggle />
             </div>

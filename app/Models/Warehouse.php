@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WarehouseType;
+use App\Models\Concerns\BelongsToBranch;
 use App\Models\Concerns\TracksAuthors;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Warehouse extends Model
 {
+    use BelongsToBranch;
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
@@ -41,6 +43,15 @@ class Warehouse extends Model
             'is_sellable' => 'boolean',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Central warehouses (branch_id NULL) are visible to every branch,
+     * but only unrestricted (head office) users may create or change them.
+     */
+    public static function allowsSharedBranchRecords(): bool
+    {
+        return true;
     }
 
     public function branch(): BelongsTo

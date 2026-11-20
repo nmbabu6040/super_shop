@@ -1,47 +1,49 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# Super Shop Development Rules
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+## Project Stack
 
-## Prerequisites
+- HTML
+- CSS3
+- Laravel 13
+- PHP 8.4
+- MySQL
+- Tailwind CSS
+- Vanilla JavaScript
+- Blade Templates
+- Spatie Laravel Permission
+- Spatie Laravel Activitylog
 
-Verify that PHP and Composer are available:
+## Development Rules
 
-```sh
-php -v
-composer -V
-```
+1. Work phase by phase.
+2. Never recreate completed modules.
+3. Inspect only relevant files.
+4. Avoid scanning the entire project repeatedly.
+5. Write production-ready code.
+6. Follow Laravel best practices.
+7. Use Form Requests for validation.
+8. Use Policies and Permissions for authorization.
+9. Use database transactions for financial operations.
+10. Include proper error handling.
+11. Use Bootstrap 5, not Tailwind CSS.
+12. Do not create duplicate migrations, routes,
+    models, controllers or tables.
+13. Test each module before marking it complete.
+14. Do not modify unrelated files.
 
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
+## Workflow
 
-macOS:
+- First inspect the relevant existing files.
+- Make a short implementation plan.
+- Implement the requested module.
+- Run relevant tests.
+- Report changed files and test results.
+- Update project progress documentation.
 
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
-```
+## Token Optimization
 
-Windows PowerShell:
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
-
-Linux:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
-
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
-
-## Agent Setup
-
-Install Laravel Boost from the application root before making application changes:
-
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>
+- Do not repeatedly read unchanged files.
+- Do not print entire source files unnecessarily.
+- Avoid unnecessary explanations.
+- Avoid repeated full-project scans.
+- Keep responses concise.

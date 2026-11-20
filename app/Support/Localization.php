@@ -40,17 +40,18 @@ final class Localization
     }
 
     /**
-     * Decide which language a visitor without a locale URL prefix should get:
-     * 1) the language they chose earlier (session),
-     * 2) the browser's Accept-Language header, if it matches a supported language,
-     * 3) the application default.
+     * Language for a visitor who opens "/" without a locale prefix:
+     * 1) the language chosen earlier (session),
+     * 2) the signed-in user's saved preference,
+     * 3) the browser's Accept-Language header, if it matches a supported language,
+     * 4) the application default.
      */
     public static function preferredLocaleFor(Request $request): string
     {
-        $storedLocale = $request->session()->get(self::sessionKey());
+        $rememberedLocale = self::rememberedLocale($request);
 
-        if (is_string($storedLocale) && self::isSupported($storedLocale)) {
-            return $storedLocale;
+        if ($rememberedLocale !== null) {
+            return $rememberedLocale;
         }
 
         if ($request->headers->has('Accept-Language')) {
@@ -70,6 +71,33 @@ final class Localization
         }
 
         return (string) config('app.locale');
+    }
+
+    /**
+     * Language for routes that have no locale prefix (the admin area):
+     * session choice, then the user's saved preference, then the application default.
+     * The browser header is deliberately ignored here.
+     */
+    public static function localeForUnprefixedRoute(Request $request): string
+    {
+        return self::rememberedLocale($request) ?? (string) config('app.locale');
+    }
+
+    /**
+     * The language of the request being handled, usable even BEFORE the SetLocale middleware ran.
+     *
+     * Laravel runs the "auth" middleware ahead of SetLocale, so redirects built by auth (to the
+     * login page) cannot rely on app()->getLocale(). The locale in the URL is authoritative.
+     */
+    public static function currentLocaleFor(Request $request): string
+    {
+        $routeLocale = $request->route('locale');
+
+        if (is_string($routeLocale) && self::isSupported($routeLocale)) {
+            return $routeLocale;
+        }
+
+        return self::localeForUnprefixedRoute($request);
     }
 
     /**
@@ -95,5 +123,24 @@ final class Localization
         return $queryString !== null && $queryString !== ''
             ? $targetUrl . '?' . $queryString
             : $targetUrl;
+    }
+
+    private static function rememberedLocale(Request $request): ?string
+    {
+        if ($request->hasSession()) {
+            $sessionLocale = $request->session()->get(self::sessionKey());
+
+            if (is_string($sessionLocale) && self::isSupported($sessionLocale)) {
+                return $sessionLocale;
+            }
+        }
+
+        $userLocale = $request->user()?->preferred_locale;
+
+        if (is_string($userLocale) && self::isSupported($userLocale)) {
+            return $userLocale;
+        }
+
+        return null;
     }
 }

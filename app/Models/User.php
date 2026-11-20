@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\Gender;
+use App\Enums\RoleName;
 use App\Enums\UserStatus;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,11 +17,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+    use HasRoles;
     use LogsActivity;
     use Notifiable;
     use SoftDeletes;
@@ -27,7 +31,7 @@ class User extends Authenticatable
     /**
      * SECURITY: "status" and "has_all_branch_access" are deliberately NOT mass assignable.
      * A request payload must never be able to grant branch access or change account status;
-     * only service code may set them explicitly.
+     * only service code may set them explicitly. Roles are assigned only through services too.
      */
     protected $fillable = [
         'name',
@@ -76,9 +80,26 @@ class User extends Authenticatable
         return $this->status === UserStatus::Active;
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole(RoleName::SuperAdmin->value);
+    }
+
+    /**
+     * True for storefront customers: the user has the customer role and nothing else.
+     * A user with no roles at all is NOT customer-only (they get no access, fail-closed).
+     */
+    public function isCustomerOnly(): bool
+    {
+        $roleNames = $this->getRoleNames();
+
+        return $roleNames->isNotEmpty()
+            && $roleNames->every(static fn (string $roleName): bool => $roleName === RoleName::Customer->value);
+    }
+
     /**
      * Branch-level authorization primitive. Policies and the BranchContext service
-     * (Phase 4) build on this; never rely on frontend menu hiding.
+     * build on this; never rely on frontend menu hiding.
      */
     public function canAccessBranch(Branch|int $branch): bool
     {
