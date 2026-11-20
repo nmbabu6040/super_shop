@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Frontend\AccountController;
+use App\Http\Controllers\Frontend\Auth\AcceptInvitationController;
 use App\Http\Controllers\Frontend\Auth\EmailVerificationController;
 use App\Http\Controllers\Frontend\Auth\LoginController;
 use App\Http\Controllers\Frontend\Auth\NewPasswordController;
@@ -42,6 +43,13 @@ Route::prefix('{locale}')
             Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->middleware('throttle:10,1')
                 ->name('password.update');
+
+            Route::get('accept-invitation/{token}', [AcceptInvitationController::class, 'create'])
+                ->middleware('throttle:20,1')
+                ->name('invitation.accept');
+            Route::post('accept-invitation', [AcceptInvitationController::class, 'store'])
+                ->middleware('throttle:10,1')
+                ->name('invitation.store');
         });
 
         // Signed-in users. "active" signs out accounts that were suspended meanwhile.
