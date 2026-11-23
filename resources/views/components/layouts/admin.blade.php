@@ -92,6 +92,7 @@
                     <x-admin.branch-switcher />
                     <x-admin.language-switcher />
                     <x-ui.theme-toggle />
+                    <x-admin.notification-bell />
 
                     <div x-data="{ open: false }" x-on:click.outside="open = false"
                         x-on:keydown.escape.window="open = false" class="relative">
@@ -113,6 +114,18 @@
                                 {{ __('admin.topbar.signed_in_as') }}<br>
                                 <span class="text-sm font-medium text-ink">{{ $currentUser->email }}</span>
                             </p>
+                            <a href="{{ route('admin.notifications.index') }}"
+                                class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-surface"
+                                role="menuitem">
+                                <x-ui.icon name="bell" class="size-4" />
+                                {{ __('notifications.title') }}
+                            </a>
+                            <a href="{{ route('admin.notifications.preferences') }}"
+                                class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-surface"
+                                role="menuitem">
+                                <x-ui.icon name="settings" class="size-4" />
+                                {{ __('notifications.preferences_title') }}
+                            </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"

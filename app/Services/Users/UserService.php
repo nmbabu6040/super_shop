@@ -9,8 +9,10 @@ use App\Enums\UserStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\StaffInvitation;
 use App\Models\User;
+use App\Notifications\StaffAccessChangedNotification;
 use App\Services\Auth\PasswordResetService;
 use App\Services\Auth\UserSessionService;
+use App\Services\Notifications\NotificationDispatcher;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -29,6 +31,7 @@ final class UserService
         private readonly StaffInvitationService $invitationService,
         private readonly UserSessionService $userSessionService,
         private readonly PasswordResetService $passwordResetService,
+        private readonly NotificationDispatcher $notificationDispatcher,
     ) {
     }
 
@@ -97,6 +100,7 @@ final class UserService
 
         $oldRoleNames = $user->getRoleNames()->sort()->values()->all();
         $oldBranchIds = $this->sortedBranchIds($user);
+        $oldAllBranchAccess = (bool) $user->has_all_branch_access;
         $emailChanged = Str::lower((string) $data['email']) !== Str::lower($user->email);
 
         DB::transaction(function () use ($actor, $user, $data, $roleNames, $branchIds, $hasAllBranchAccess, $emailChanged, $oldRoleNames, $oldBranchIds): void {
@@ -117,6 +121,15 @@ final class UserService
 
         if ($emailChanged && $user->status === UserStatus::Active) {
             $user->sendEmailVerificationNotification();
+        }
+
+        $accessChanged = $oldRoleNames !== $roleNames
+            || $oldBranchIds !== $branchIds
+            || $oldAllBranchAccess !== $hasAllBranchAccess;
+
+        // A change of access is always reported to the person concerned (a security notice).
+        if ($accessChanged && $user->status === UserStatus::Active) {
+            $this->notificationDispatcher->send($user, new StaffAccessChangedNotification($actor->name));
         }
 
         return $user;

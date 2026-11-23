@@ -49,7 +49,7 @@ final class BrandPalette
             $targetChannel = $target === 'white' ? 255 : 0;
 
             $mixedRgb = array_map(
-                static fn(int $channel): int => (int) round(
+                static fn (int $channel): int => (int) round(
                     $channel * (1 - $weight) + $targetChannel * $weight
                 ),
                 $baseRgb

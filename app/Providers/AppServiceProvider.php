@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use App\Policies\ActivityLogPolicy;
+use App\Policies\RolePolicy;
 use App\Services\Settings\SettingsService;
 use App\Support\Branch\BranchContext;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +35,17 @@ class AppServiceProvider extends ServiceProvider
         // The Super Administrator passes every ability check, including permissions added later.
         // Guests are skipped automatically because the callback requires a User.
         Gate::before(static fn (User $user): ?bool => $user->isSuperAdmin() ? true : null);
+
+        // Models that live outside App\Models need an explicit policy registration.
+        Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Activity::class, ActivityLogPolicy::class);
+
+        // Every audit entry is tagged with the branch the actor was working in.
+        Activity::creating(static function (Activity $activity): void {
+            if ($activity->branch_id === null) {
+                $activity->branch_id = app(BranchContext::class)->activeBranchId();
+            }
+        });
 
         // One password policy for the whole application. The "uncompromised" check calls an
         // external breach-database API, so it runs in production only.

@@ -3,9 +3,14 @@
 declare(strict_types=1);
 
 use App\Models\Branch;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Setting;
+use App\Models\Unit;
 use App\Models\User;
 use App\Models\Warehouse;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
 
 /*
  | Sidebar entries. "can" is an ability checked through policies, so the sidebar and the
@@ -36,11 +41,46 @@ return [
         'active' => 'admin.warehouses.*',
     ],
     [
+        'label' => 'catalog.menu.categories',
+        'route' => 'admin.categories.index',
+        'icon' => 'layers',
+        'can' => ['viewAny', Category::class],
+        'active' => 'admin.categories.*',
+    ],
+    [
+        'label' => 'catalog.menu.brands',
+        'route' => 'admin.brands.index',
+        'icon' => 'tag',
+        'can' => ['viewAny', Brand::class],
+        'active' => 'admin.brands.*',
+    ],
+    [
+        'label' => 'catalog.menu.units',
+        'route' => 'admin.units.index',
+        'icon' => 'sliders',
+        'can' => ['viewAny', Unit::class],
+        'active' => 'admin.units.*',
+    ],
+    [
         'label' => 'users.menu',
         'route' => 'admin.users.index',
         'icon' => 'users',
         'can' => ['viewAny', User::class],
         'active' => 'admin.users.*',
+    ],
+    [
+        'label' => 'roles.menu',
+        'route' => 'admin.roles.index',
+        'icon' => 'shield',
+        'can' => ['viewAny', Role::class],
+        'active' => 'admin.roles.*',
+    ],
+    [
+        'label' => 'audit.menu',
+        'route' => 'admin.audit-logs.index',
+        'icon' => 'list',
+        'can' => ['viewAny', Activity::class],
+        'active' => 'admin.audit-logs.*',
     ],
     [
         'label' => 'settings.menu',

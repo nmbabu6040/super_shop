@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FoundationSeeder::class,
             RbacSeeder::class,
+            CatalogSeeder::class,
             LocalDemoSeeder::class,
         ]);
     }

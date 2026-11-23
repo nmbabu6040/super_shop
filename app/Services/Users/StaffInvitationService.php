@@ -7,8 +7,10 @@ namespace App\Services\Users;
 use App\Enums\UserStatus;
 use App\Models\StaffInvitation;
 use App\Models\User;
+use App\Notifications\StaffInvitationAcceptedNotification;
 use App\Notifications\StaffInvitationLifetime;
 use App\Notifications\StaffInvitationNotification;
+use App\Services\Notifications\NotificationDispatcher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -20,6 +22,10 @@ use Illuminate\Validation\ValidationException;
  */
 final class StaffInvitationService
 {
+    public function __construct(private readonly NotificationDispatcher $notificationDispatcher)
+    {
+    }
+
     public function send(User $user, ?User $invitedBy = null): void
     {
         $plainToken = Str::random(64);
@@ -59,6 +65,7 @@ final class StaffInvitationService
     /**
      * Sets the chosen password, activates the account and marks the email as verified
      * (opening the emailed link proves the address). The invitation can be used only once.
+     * The person who sent the invitation is told that the account is active.
      *
      * @throws ValidationException
      */
@@ -70,7 +77,9 @@ final class StaffInvitationService
             throw ValidationException::withMessages(['password' => __('invitation.invalid')]);
         }
 
-        return DB::transaction(function () use ($invitation, $password): User {
+        $inviterId = $invitation->created_by;
+
+        $user = DB::transaction(function () use ($invitation, $password): User {
             $user = $invitation->user;
 
             $user->forceFill([
@@ -83,5 +92,15 @@ final class StaffInvitationService
 
             return $user;
         });
+
+        if ($inviterId !== null && $inviterId !== $user->getKey()) {
+            $inviter = User::query()->find($inviterId);
+
+            if ($inviter !== null) {
+                $this->notificationDispatcher->send($inviter, new StaffInvitationAcceptedNotification($user->name));
+            }
+        }
+
+        return $user;
     }
 }
