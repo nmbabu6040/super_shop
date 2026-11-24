@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Catalog;
 
+use App\Exceptions\BusinessRuleException;
 use App\Models\Brand;
+use App\Models\Product;
 use App\Support\Media\PublicImageStore;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -72,6 +74,11 @@ final class BrandService
 
     public function delete(Brand $brand): void
     {
+        // Deleted products still point to their brand, so they count as well.
+        if (Product::withTrashed()->where('brand_id', $brand->getKey())->exists()) {
+            throw BusinessRuleException::translated('products.in_use.brand');
+        }
+
         $brand->delete();
     }
 
@@ -85,11 +92,9 @@ final class BrandService
      */
     private function resolveSlug(array $data): string
     {
-
         $baseSlug = ! empty($data['slug'])
             ? (string) $data['slug']
             : (Str::slug((string) ($data['name']['en'] ?? '')) ?: 'brand');
-
 
         $candidate = $baseSlug;
         $suffix = 2;

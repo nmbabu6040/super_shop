@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'menu' => 'Products',
+    'title' => 'Products',
+    'create_title' => 'New product',
+    'edit_title' => 'Edit product',
+    'search_placeholder' => 'Name, SKU or barcode…',
+    'created' => 'Product created.',
+    'updated' => 'Product updated.',
+    'deleted' => 'Product deleted.',
+    'restored' => 'Product restored.',
+    'no_tax' => 'No tax',
+    'unit_help' => 'Chosen once: the unit cannot be changed later because stock quantities depend on it.',
+    'unit_locked' => 'The unit cannot be changed after creation.',
+    'sku_help' => 'Leave empty to generate it automatically.',
+    'mrp_help' => 'Maximum retail price. The selling price can never be higher.',
+    'barcode_help' => 'Scan or type the code printed on the package.',
+    'medicine_forced_note' => 'Medicines always track batches and expiry dates.',
+    'prescription_warning' => 'Medicines that require a prescription can only be sold with a verified prescription.',
+    'images_help' => 'JPG, PNG or WebP, up to 2 MB each, at most :max images per product.',
+
+    'types' => [
+        'general' => 'General',
+        'medicine' => 'Medicine',
+    ],
+
+    'sections' => [
+        'basics' => 'Basic information',
+        'pricing' => 'SKU, price and barcode',
+        'stock' => 'Stock settings',
+        'medicine' => 'Medicine details',
+        'images' => 'Images',
+        'visibility' => 'Visibility',
+    ],
+
+    'fields' => [
+        'product' => 'Product',
+        'category' => 'Category',
+        'brand' => 'Brand',
+        'unit' => 'Unit',
+        'tax_rate' => 'Tax rate',
+        'product_type' => 'Product type',
+        'sku' => 'SKU',
+        'cost_price' => 'Cost price',
+        'selling_price' => 'Selling price',
+        'mrp' => 'MRP',
+        'barcode' => 'Barcode',
+        'generate_barcode' => 'Generate an internal barcode',
+        'reorder_level' => 'Reorder level',
+        'min_stock' => 'Minimum stock',
+        'max_stock' => 'Maximum stock',
+        'track_batches' => 'Track batches',
+        'track_expiry' => 'Track expiry dates',
+        'track_serial' => 'Track serial numbers',
+        'generic_name' => 'Generic name',
+        'manufacturer' => 'Manufacturer',
+        'drug_category' => 'Drug category',
+        'registration_number' => 'Registration number',
+        'storage_conditions' => 'Storage conditions',
+        'requires_prescription' => 'Requires a prescription',
+        'is_controlled' => 'Controlled drug',
+        'images' => 'Images',
+        'primary_image' => 'Main image',
+        'remove_image' => 'Remove',
+        'is_sold_online' => 'Sell on the website',
+        'is_featured' => 'Featured product',
+    ],
+
+    'errors' => [
+        'price_above_mrp' => 'The selling price cannot be higher than the MRP.',
+        'max_below_min' => 'The maximum stock cannot be lower than the minimum stock.',
+        'barcode_invalid' => 'This barcode is not valid (check the digits; EAN/UPC codes have a check digit).',
+        'barcode_taken' => 'This barcode already belongs to another product.',
+        'sku_invalid' => 'Use capital letters, digits, dots, hyphens or underscores (2–60 characters).',
+        'too_many_images' => 'A product can have at most :max images.',
+        'invalid_primary_image' => 'The main image must be one of the product\'s images.',
+        'parent_deleted' => 'Restore the product\'s category or brand first.',
+    ],
+
+    'in_use' => [
+        'category' => 'Products still use this category.',
+        'brand' => 'Products still use this brand.',
+        'unit' => 'Products still use this unit.',
+    ],
+];

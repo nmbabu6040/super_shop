@@ -25,6 +25,18 @@
             <line x1="12" y1="22.08" x2="12" y2="12" />
         @break
 
+        @case('shopping-bag')
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+        @break
+
+        @case('percent')
+            <line x1="19" y1="5" x2="5" y2="19" />
+            <circle cx="6.5" cy="6.5" r="2.5" />
+            <circle cx="17.5" cy="17.5" r="2.5" />
+        @break
+
         @case('layers')
             <polygon points="12 2 2 7 12 12 22 7 12 2" />
             <polyline points="2 17 12 22 22 17" />

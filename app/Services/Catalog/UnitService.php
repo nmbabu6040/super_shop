@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Catalog;
 
 use App\Exceptions\BusinessRuleException;
+use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Support\Arr;
 
@@ -40,6 +41,11 @@ final class UnitService
     {
         if ($unit->derivedUnits()->exists()) {
             throw BusinessRuleException::translated('catalog.units.has_derived_delete');
+        }
+
+        // Deleted products still point to their unit, so they count as well.
+        if (Product::withTrashed()->where('unit_id', $unit->getKey())->exists()) {
+            throw BusinessRuleException::translated('products.in_use.unit');
         }
 
         $unit->delete();

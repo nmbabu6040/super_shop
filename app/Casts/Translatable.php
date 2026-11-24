@@ -76,11 +76,11 @@ class Translatable implements CastsAttributes, ComparesCastableAttributes
         $orderedLocaleCodes = [
             ...array_values(array_filter(
                 ['en'],
-                fn(string $localeCode): bool => in_array($localeCode, $localeCodes, true)
+                fn (string $localeCode): bool => in_array($localeCode, $localeCodes, true)
             )),
             ...array_values(array_filter(
                 $localeCodes,
-                fn(string $localeCode): bool => $localeCode !== 'en'
+                fn (string $localeCode): bool => $localeCode !== 'en'
             )),
         ];
 

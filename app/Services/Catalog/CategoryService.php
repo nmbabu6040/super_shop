@@ -6,6 +6,7 @@ namespace App\Services\Catalog;
 
 use App\Exceptions\BusinessRuleException;
 use App\Models\Category;
+use App\Models\Product;
 use App\Support\Media\PublicImageStore;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -87,6 +88,11 @@ final class CategoryService
             throw BusinessRuleException::translated('catalog.categories.has_children');
         }
 
+        // Deleted products still point to their category, so they count as well.
+        if (Product::withTrashed()->where('category_id', $category->getKey())->exists()) {
+            throw BusinessRuleException::translated('products.in_use.category');
+        }
+
         $category->delete();
     }
 
@@ -111,7 +117,7 @@ final class CategoryService
             $currentLevelIds = Category::withTrashed()
                 ->whereIn('parent_id', $currentLevelIds)
                 ->pluck('id')
-                ->map(static fn(mixed $id): int => (int) $id)
+                ->map(static fn (mixed $id): int => (int) $id)
                 ->all();
 
             $descendantIds = [...$descendantIds, ...$currentLevelIds];
@@ -199,11 +205,9 @@ final class CategoryService
      */
     private function resolveSlug(array $data): string
     {
-
         $baseSlug = ! empty($data['slug'])
             ? (string) $data['slug']
             : (Str::slug((string) ($data['name']['en'] ?? '')) ?: 'category');
-
 
         $candidate = $baseSlug;
         $suffix = 2;

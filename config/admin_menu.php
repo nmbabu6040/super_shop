@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Models\Branch;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Setting;
+use App\Models\TaxRate;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Warehouse;
@@ -41,6 +43,13 @@ return [
         'active' => 'admin.warehouses.*',
     ],
     [
+        'label' => 'products.menu',
+        'route' => 'admin.products.index',
+        'icon' => 'shopping-bag',
+        'can' => ['viewAny', Product::class],
+        'active' => 'admin.products.*',
+    ],
+    [
         'label' => 'catalog.menu.categories',
         'route' => 'admin.categories.index',
         'icon' => 'layers',
@@ -60,6 +69,13 @@ return [
         'icon' => 'sliders',
         'can' => ['viewAny', Unit::class],
         'active' => 'admin.units.*',
+    ],
+    [
+        'label' => 'tax.menu',
+        'route' => 'admin.tax-rates.index',
+        'icon' => 'percent',
+        'can' => ['viewAny', TaxRate::class],
+        'active' => 'admin.tax-rates.*',
     ],
     [
         'label' => 'users.menu',

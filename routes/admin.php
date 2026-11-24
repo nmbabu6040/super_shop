@@ -10,8 +10,10 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LocaleController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TaxRateController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
@@ -61,6 +63,15 @@ Route::middleware(['auth', 'verified', 'active', 'staff'])->group(function (): v
         ->name('brands.restore');
 
     Route::resource('units', UnitController::class)->except(['show']);
+
+    Route::resource('tax-rates', TaxRateController::class)
+        ->parameters(['tax-rates' => 'tax_rate'])
+        ->except(['show']);
+
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::post('products/{product}/restore', [ProductController::class, 'restore'])
+        ->withTrashed()
+        ->name('products.restore');
 
     Route::resource('users', UserController::class)->except(['show']);
     Route::post('users/{user}/restore', [UserController::class, 'restore'])->withTrashed()->name('users.restore');
