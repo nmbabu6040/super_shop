@@ -12,11 +12,14 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\TaxRate;
 use App\Models\Unit;
+use App\Models\User;
+use App\Models\VariantBranchPrice;
 use App\Services\Catalog\CategoryService;
 use App\Services\Catalog\CategoryTree;
 use App\Services\Catalog\ProductService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -28,8 +31,7 @@ class ProductController extends Controller
         private readonly ProductService $productService,
         private readonly CategoryService $categoryService,
         private readonly CategoryTree $categoryTree,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -62,15 +64,15 @@ class ProductController extends Controller
                         ->orWhere('slug', 'like', "%{$searchTerm}%")
                         ->orWhereHas('variants', function (Builder $variantQuery) use ($searchTerm): void {
                             $variantQuery->where('sku', 'like', "%{$searchTerm}%")
-                                ->orWhereHas('barcodes', fn (Builder $barcodeQuery) => $barcodeQuery->where('barcode', 'like', "%{$searchTerm}%"));
+                                ->orWhereHas('barcodes', fn(Builder $barcodeQuery) => $barcodeQuery->where('barcode', 'like', "%{$searchTerm}%"));
                         });
                 });
             })
-            ->when($categoryIds !== [], fn (Builder $query) => $query->whereIn('category_id', $categoryIds))
-            ->when($brandFilter > 0, fn (Builder $query) => $query->where('brand_id', $brandFilter))
-            ->when($typeFilter !== null, fn (Builder $query) => $query->where('product_type', $typeFilter->value))
-            ->when(in_array($activeFilter, ['0', '1'], true), fn (Builder $query) => $query->where('is_active', $activeFilter === '1'))
-            ->when($showDeleted, fn (Builder $query) => $query->onlyTrashed())
+            ->when($categoryIds !== [], fn(Builder $query) => $query->whereIn('category_id', $categoryIds))
+            ->when($brandFilter > 0, fn(Builder $query) => $query->where('brand_id', $brandFilter))
+            ->when($typeFilter !== null, fn(Builder $query) => $query->where('product_type', $typeFilter->value))
+            ->when(in_array($activeFilter, ['0', '1'], true), fn(Builder $query) => $query->where('is_active', $activeFilter === '1'))
+            ->when($showDeleted, fn(Builder $query) => $query->onlyTrashed())
             ->latest('id')
             ->paginate(20)
             ->withQueryString();
@@ -90,29 +92,38 @@ class ProductController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         Gate::authorize('create', Product::class);
 
-        return view('admin.catalog.products.form', $this->formData(null));
+        return view('admin.catalog.products.form', $this->formData($request->user(), null));
     }
 
     public function store(ProductRequest $request): RedirectResponse
     {
         $this->productService->create(
-            Arr::except($request->validated(), ['images', 'remove_images', 'primary_image_id']),
+            Arr::except($request->validated(), ['images', 'remove_images', 'primary_image_id', 'branch_prices']),
             $request->file('images') ?? [],
         );
 
         return redirect()->route('admin.products.index')->with('success', __('products.created'));
     }
 
-    public function edit(Product $product): View
+    public function edit(Request $request, Product $product): View
     {
         Gate::authorize('update', $product);
 
         return view('admin.catalog.products.form', $this->formData(
-            $product->load(['defaultVariant.primaryBarcode', 'images', 'medicineDetail', 'unit'])
+            $request->user(),
+            $product->load([
+                'defaultVariant.barcodes',
+                'defaultVariant.primaryBarcode',
+                'variants.barcodes',
+                'variants.primaryBarcode',
+                'images',
+                'medicineDetail',
+                'unit',
+            ])
         ));
     }
 
@@ -126,6 +137,7 @@ class ProductController extends Controller
             $request->file('images') ?? [],
             array_map('intval', (array) $request->input('remove_images', [])),
             $primaryImageId === null || $primaryImageId === '' ? null : (int) $primaryImageId,
+            $request->user()->accessibleBranchesQuery()->pluck('id')->map(fn($id): int => (int) $id)->all(),
         );
 
         return redirect()->route('admin.products.index')->with('success', __('products.updated'));
@@ -152,17 +164,42 @@ class ProductController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function formData(?Product $product): array
+    private function formData(User $user, ?Product $product): array
     {
+        $accessibleBranches = $user->accessibleBranchesQuery()->orderBy('name')->get(['id', 'name']);
+
         return [
             'product' => $product,
             'categoryOptions' => $this->categoryOptions(),
-            'brandOptions' => Brand::query()->orderBy('name->en')->get()->mapWithKeys(fn (Brand $brand): array => [$brand->id => (string) $brand->name])->all(),
-            'unitOptions' => Unit::query()->orderBy('code')->get()->mapWithKeys(fn (Unit $unit): array => [$unit->id => $unit->name . ' (' . $unit->symbol . ')'])->all(),
-            'taxRateOptions' => TaxRate::query()->orderBy('rate', 'desc')->get()->mapWithKeys(fn (TaxRate $taxRate): array => [$taxRate->id => $taxRate->name . ' (' . rtrim(rtrim($taxRate->rate, '0'), '.') . '%)'])->all(),
+            'brandOptions' => Brand::query()->orderBy('name->en')->get()->mapWithKeys(fn(Brand $brand): array => [$brand->id => (string) $brand->name])->all(),
+            'unitOptions' => Unit::query()->orderBy('code')->get()->mapWithKeys(fn(Unit $unit): array => [$unit->id => $unit->name . ' (' . $unit->symbol . ')'])->all(),
+            'taxRateOptions' => TaxRate::query()->orderBy('rate', 'desc')->get()->mapWithKeys(fn(TaxRate $taxRate): array => [$taxRate->id => $taxRate->name . ' (' . rtrim(rtrim($taxRate->rate, '0'), '.') . '%)'])->all(),
             'defaultTaxRateId' => TaxRate::query()->whereNotNull('default_marker')->value('id'),
-            'typeOptions' => collect(ProductType::cases())->mapWithKeys(fn (ProductType $type): array => [$type->value => $type->label()])->all(),
+            'typeOptions' => collect(ProductType::cases())->mapWithKeys(fn(ProductType $type): array => [$type->value => $type->label()])->all(),
+            'accessibleBranches' => $accessibleBranches,
+            'branchPrices' => $this->branchPricesFor($product, $accessibleBranches),
         ];
+    }
+
+    /**
+     * Existing branch prices as [variantId => [branchId => price]], limited to branches the user may see.
+     *
+     * @param  Collection<int, \App\Models\Branch>  $accessibleBranches
+     * @return array<int, array<int, string>>
+     */
+    private function branchPricesFor(?Product $product, Collection $accessibleBranches): array
+    {
+        if ($product === null) {
+            return [];
+        }
+
+        return VariantBranchPrice::withoutBranchScope()
+            ->whereIn('variant_id', $product->variants->pluck('id'))
+            ->whereIn('branch_id', $accessibleBranches->pluck('id'))
+            ->get()
+            ->groupBy('variant_id')
+            ->map(fn(Collection $rows): array => $rows->pluck('selling_price', 'branch_id')->all())
+            ->all();
     }
 
     /**

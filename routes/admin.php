@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ActiveBranchController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FiscalYearController;
 use App\Http\Controllers\Admin\LocaleController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProductController;
@@ -72,6 +74,14 @@ Route::middleware(['auth', 'verified', 'active', 'staff'])->group(function (): v
     Route::post('products/{product}/restore', [ProductController::class, 'restore'])
         ->withTrashed()
         ->name('products.restore');
+
+    Route::resource('accounts', AccountController::class)->except(['show']);
+
+    Route::resource('fiscal-years', FiscalYearController::class)
+        ->parameters(['fiscal-years' => 'fiscal_year'])
+        ->only(['index', 'create', 'store', 'destroy']);
+    Route::post('fiscal-years/periods/{period}/close', [FiscalYearController::class, 'closePeriod'])->name('fiscal-years.periods.close');
+    Route::post('fiscal-years/periods/{period}/reopen', [FiscalYearController::class, 'reopenPeriod'])->name('fiscal-years.periods.reopen');
 
     Route::resource('users', UserController::class)->except(['show']);
     Route::post('users/{user}/restore', [UserController::class, 'restore'])->withTrashed()->name('users.restore');

@@ -87,7 +87,9 @@ it('keeps generated slugs unique', function (): void {
 it('rejects invalid product data', function (array $overrides, string $invalidField): void {
     $category = Category::factory()->create();
     $unit = Unit::factory()->create();
+
     $existingProduct = Product::factory()->create();
+    $existingProduct->defaultVariant->update(['sku' => 'SKU-TAKEN']);
     ProductBarcode::query()->create([
         'variant_id' => $existingProduct->defaultVariant->id,
         'barcode' => '5901234123457',
@@ -401,7 +403,16 @@ it('writes price changes to the audit log', function (): void {
 it('follows the permissions of each role', function (): void {
     $product = Product::factory()->create();
 
-    $this->actingAs(createStaffWithRole(RoleName::Cashier))->get('/admin/products')->assertForbidden();
+    // HR managers have no catalog permissions at all.
+    $this->actingAs(createStaffWithRole(RoleName::HrManager))->get('/admin/products')->assertForbidden();
+
+    // Cashiers may look products up, but not create, edit or delete them.
+    $cashier = createStaffWithRole(RoleName::Cashier);
+
+    $this->actingAs($cashier)->get('/admin/products')->assertOk();
+    $this->actingAs($cashier)->get('/admin/products/create')->assertForbidden();
+    $this->actingAs($cashier)->get(route('admin.products.edit', $product))->assertForbidden();
+    $this->actingAs($cashier)->delete(route('admin.products.destroy', $product))->assertForbidden();
 
     // Inventory managers may view, create and edit products, but not delete them.
     $inventoryManager = createStaffWithRole(RoleName::InventoryManager);

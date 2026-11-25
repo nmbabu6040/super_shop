@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'menu' => [
+        'accounts' => 'Chart of accounts',
+        'fiscal_years' => 'Fiscal years',
+    ],
+
+    'types' => [
+        'asset' => 'Asset',
+        'liability' => 'Liability',
+        'equity' => 'Equity',
+        'revenue' => 'Revenue',
+        'expense' => 'Expense',
+    ],
+    'statuses' => [
+        'pending' => 'Waiting for approval',
+        'posted' => 'Posted',
+        'rejected' => 'Rejected',
+    ],
+    'period_statuses' => [
+        'open' => 'Open',
+        'closed' => 'Closed',
+    ],
+
+    'fields' => [
+        'code' => 'Account code',
+        'parent' => 'Parent account',
+        'type' => 'Account type',
+        'kind' => 'Kind',
+    ],
+
+    'reversal_description' => 'Reversal of :number: :reason',
+
+    'accounts' => [
+        'title' => 'Chart of accounts',
+        'create_title' => 'New account',
+        'edit_title' => 'Edit account',
+        'system' => 'System',
+        'postable' => 'Posting account',
+        'group' => 'Group',
+        'no_parent' => 'None (top level)',
+        'parent_help' => 'Only group accounts can contain sub-accounts. The type is taken from the parent.',
+        'code_help' => '3–10 digits, for example 1110. It cannot be changed later.',
+        'code_locked' => 'The code cannot be changed after creation.',
+        'type_help' => 'Choose the type for a top-level account.',
+        'type_locked' => 'The type cannot be changed once the account is in use or has sub-accounts.',
+        'postable_label' => 'Posting account (can receive journal entries)',
+        'postable_help' => 'Switch off to make this a group that only collects its sub-accounts in reports.',
+        'confirm_delete' => 'This account will be deleted permanently.',
+        'created' => 'Account created.',
+        'updated' => 'Account updated.',
+        'deleted' => 'Account deleted.',
+    ],
+
+    'fiscal' => [
+        'title' => 'Fiscal years and periods',
+        'subtitle' => 'Journal entries can only be posted into an open period.',
+        'create_title' => 'New fiscal year',
+        'name' => 'Name',
+        'starts_on' => 'First day',
+        'starts_on_help' => 'Must be the first day of a month. Twelve monthly periods are created.',
+        'close_period' => 'Close period',
+        'reopen_period' => 'Reopen period',
+        'confirm_close' => 'Nothing can be posted into this period while it is closed.',
+        'confirm_reopen' => 'Reopening lets entries be posted into this period again.',
+        'confirm_delete' => 'This fiscal year and its periods will be deleted.',
+        'created' => 'Fiscal year created.',
+        'deleted' => 'Fiscal year deleted.',
+        'period_closed' => 'Period closed.',
+        'period_reopened' => 'Period reopened.',
+    ],
+
+    'errors' => [
+        'too_few_lines' => 'A journal entry needs at least two lines.',
+        'invalid_amount' => 'The amount ":amount" is not valid (use digits with at most two decimals).',
+        'line_needs_one_side' => 'Every line must have either a debit or a credit amount, not both and not neither.',
+        'zero_total' => 'The total of the entry must be greater than zero.',
+        'unbalanced' => 'The entry does not balance: debits :debit, credits :credit.',
+        'unknown_account' => 'One of the accounts does not exist.',
+        'account_inactive' => 'Account :code is inactive.',
+        'account_not_postable' => 'Account :code is a group account and cannot receive entries.',
+        'unknown_branch' => 'One of the branches does not exist.',
+        'no_period' => 'There is no accounting period for :date. Create the fiscal year first.',
+        'period_closed' => 'The accounting period :period is closed.',
+        'period_has_pending' => 'Period :period still has entries waiting for approval.',
+        'not_pending' => 'This entry is not waiting for approval.',
+        'self_approval' => 'You cannot approve your own entry. Another person must approve it.',
+        'not_posted' => 'Only a posted entry can be reversed.',
+        'already_reversed' => 'This entry has already been reversed.',
+        'cannot_reverse_reversal' => 'A reversing entry cannot itself be reversed. Post a new correcting entry instead.',
+        'fiscal_start_day' => 'A fiscal year must start on the first day of a month.',
+        'fiscal_name_taken' => 'A fiscal year with this name already exists.',
+        'fiscal_overlap' => 'This fiscal year overlaps an existing one.',
+        'fiscal_has_entries' => 'Journal entries have been posted into this fiscal year, so it cannot be deleted.',
+        'invalid_code' => 'Use 3 to 10 digits.',
+        'parent_missing' => 'The chosen parent account does not exist.',
+        'parent_must_be_group' => 'Only a group account can have sub-accounts.',
+        'parent_cycle' => 'An account cannot be placed below itself or one of its own sub-accounts.',
+        'type_locked' => 'The account type cannot be changed once the account is used, has sub-accounts, or is a system account.',
+        'system_locked' => 'This is a system account used by the application: it cannot be deleted, deactivated or restructured.',
+        'has_lines' => 'Journal entries have been posted to this account.',
+        'has_children' => 'This account has sub-accounts.',
+    ],
+];

@@ -56,4 +56,23 @@ final class BarcodeValidator
 
         return (10 - $sum % 10) % 10;
     }
+
+    /**
+     * Splits a multi-line text (one barcode per line) into trimmed, non-empty, unique codes.
+     *
+     * @return list<string>
+     */
+    public static function parseList(?string $text): array
+    {
+        if ($text === null || trim($text) === '') {
+            return [];
+        }
+
+        $lines = preg_split('/\R+/', trim($text)) ?: [];
+
+        return array_values(array_unique(array_filter(
+            array_map('trim', $lines),
+            static fn (string $line): bool => $line !== ''
+        )));
+    }
 }

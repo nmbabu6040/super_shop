@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\FiscalYear;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\TaxRate;
@@ -76,6 +78,20 @@ return [
         'icon' => 'percent',
         'can' => ['viewAny', TaxRate::class],
         'active' => 'admin.tax-rates.*',
+    ],
+    [
+        'label' => 'accounting.menu.accounts',
+        'route' => 'admin.accounts.index',
+        'icon' => 'book',
+        'can' => ['viewAny', Account::class],
+        'active' => 'admin.accounts.*',
+    ],
+    [
+        'label' => 'accounting.menu.fiscal_years',
+        'route' => 'admin.fiscal-years.index',
+        'icon' => 'calendar',
+        'can' => ['viewAny', FiscalYear::class],
+        'active' => 'admin.fiscal-years.*',
     ],
     [
         'label' => 'users.menu',

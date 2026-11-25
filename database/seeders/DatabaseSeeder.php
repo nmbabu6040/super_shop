@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RbacSeeder::class,
             CatalogSeeder::class,
             TaxRateSeeder::class,
+            AccountingSeeder::class,
             LocalDemoSeeder::class,
         ]);
     }
