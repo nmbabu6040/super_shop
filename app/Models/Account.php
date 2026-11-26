@@ -17,7 +17,9 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Account extends Model
 {
-    use HasFactory, LogsActivity, TracksAuthors;
+    use HasFactory;
+    use LogsActivity;
+    use TracksAuthors;
 
     protected $fillable = [
         'parent_id',

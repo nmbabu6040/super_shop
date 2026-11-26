@@ -23,7 +23,8 @@ final class JournalDraft
         public readonly ?string $sourceType = null,
         public readonly ?int $sourceId = null,
         public readonly ?string $sourceEvent = null,
-    ) {}
+    ) {
+    }
 
     public function totalDebit(): string
     {

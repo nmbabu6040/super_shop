@@ -38,7 +38,7 @@ it('refuses invalid fiscal years', function (string $name, string $startsOn): vo
     $service = app(FiscalCalendarService::class);
     $service->createFiscalYear('FY 2026', CarbonImmutable::parse('2026-01-01'));
 
-    expect(fn() => $service->createFiscalYear($name, CarbonImmutable::parse($startsOn)))
+    expect(fn () => $service->createFiscalYear($name, CarbonImmutable::parse($startsOn)))
         ->toThrow(BusinessRuleException::class);
 
     expect(FiscalYear::query()->count())->toBe(1);
@@ -60,12 +60,12 @@ it('refuses dates without a period or in a closed period', function (): void {
     $service = app(FiscalCalendarService::class);
     $service->createFiscalYear('FY 2026', CarbonImmutable::parse('2026-01-01'));
 
-    expect(fn() => $service->openPeriodFor(CarbonImmutable::parse('2027-02-01')))
+    expect(fn () => $service->openPeriodFor(CarbonImmutable::parse('2027-02-01')))
         ->toThrow(BusinessRuleException::class);
 
     $service->closePeriod(AccountingPeriod::query()->where('name', '2026-03')->firstOrFail(), createHeadOfficeAdmin());
 
-    expect(fn() => $service->openPeriodFor(CarbonImmutable::parse('2026-03-10')))
+    expect(fn () => $service->openPeriodFor(CarbonImmutable::parse('2026-03-10')))
         ->toThrow(BusinessRuleException::class);
 
     expect($service->openPeriodFor(CarbonImmutable::parse('2026-04-10'))->name)->toBe('2026-04');
@@ -98,7 +98,7 @@ it('does not close a period that still has entries waiting for approval', functi
 
     expect($entry->status)->toBe(JournalEntryStatus::Pending);
 
-    expect(fn() => app(FiscalCalendarService::class)->closePeriod(
+    expect(fn () => app(FiscalCalendarService::class)->closePeriod(
         AccountingPeriod::query()->where('name', '2026-03')->firstOrFail(),
         createHeadOfficeAdmin()
     ))->toThrow(BusinessRuleException::class);
@@ -116,6 +116,6 @@ it('deletes only a fiscal year that has no postings', function (): void {
 
     app(JournalService::class)->post(balancedDraft($fixture));
 
-    expect(fn() => $service->deleteFiscalYear(FiscalYear::query()->where('name', 'FY 2026')->firstOrFail()))
+    expect(fn () => $service->deleteFiscalYear(FiscalYear::query()->where('name', 'FY 2026')->firstOrFail()))
         ->toThrow(BusinessRuleException::class);
 });

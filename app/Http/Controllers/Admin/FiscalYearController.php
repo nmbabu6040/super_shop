@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Gate;
 
 class FiscalYearController extends Controller
 {
-    public function __construct(private readonly FiscalCalendarService $fiscalCalendar) {}
+    public function __construct(private readonly FiscalCalendarService $fiscalCalendar)
+    {
+    }
 
     public function index(): View
     {

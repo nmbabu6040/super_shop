@@ -21,7 +21,8 @@ class AccountController extends Controller
     public function __construct(
         private readonly AccountService $accountService,
         private readonly AccountTree $accountTree,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request): View
     {
@@ -43,13 +44,13 @@ class AccountController extends Controller
                         ->orWhere('name->bn', 'like', "%{$searchTerm}%");
                 });
             })
-            ->when($typeFilter !== null, fn(Builder $query) => $query->where('type', $typeFilter->value))
-            ->when(in_array($activeFilter, ['0', '1'], true), fn(Builder $query) => $query->where('is_active', $activeFilter === '1'))
+            ->when($typeFilter !== null, fn (Builder $query) => $query->where('type', $typeFilter->value))
+            ->when(in_array($activeFilter, ['0', '1'], true), fn (Builder $query) => $query->where('is_active', $activeFilter === '1'))
             ->orderBy('code')
             ->get();
 
         $rows = $isFiltered
-            ? $accounts->map(static fn(Account $account): array => ['account' => $account, 'depth' => 0])->all()
+            ? $accounts->map(static fn (Account $account): array => ['account' => $account, 'depth' => 0])->all()
             : $this->accountTree->flatten($accounts);
 
         return view('admin.accounting.accounts.index', [
@@ -121,7 +122,7 @@ class AccountController extends Controller
         return [
             'account' => $account?->loadCount(['lines', 'children']),
             'parentOptions' => $parentOptions,
-            'typeOptions' => collect(AccountType::cases())->mapWithKeys(fn(AccountType $type): array => [$type->value => $type->label()])->all(),
+            'typeOptions' => collect(AccountType::cases())->mapWithKeys(fn (AccountType $type): array => [$type->value => $type->label()])->all(),
         ];
     }
 }

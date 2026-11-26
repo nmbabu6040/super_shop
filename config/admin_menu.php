@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\FiscalYear;
+use App\Models\JournalEntry;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\TaxRate;
@@ -85,6 +86,27 @@ return [
         'icon' => 'book',
         'can' => ['viewAny', Account::class],
         'active' => 'admin.accounts.*',
+    ],
+    [
+        'label' => 'journal.menu.entries',
+        'route' => 'admin.journal-entries.index',
+        'icon' => 'list',
+        'can' => ['viewAny', JournalEntry::class],
+        'active' => 'admin.journal-entries.*',
+    ],
+    [
+        'label' => 'journal.menu.trial_balance',
+        'route' => 'admin.reports.trial-balance',
+        'icon' => 'sliders',
+        'can' => ['viewReports', JournalEntry::class],
+        'active' => 'admin.reports.trial-balance*',
+    ],
+    [
+        'label' => 'journal.menu.general_ledger',
+        'route' => 'admin.reports.general-ledger',
+        'icon' => 'book',
+        'can' => ['viewReports', JournalEntry::class],
+        'active' => 'admin.reports.general-ledger*',
     ],
     [
         'label' => 'accounting.menu.fiscal_years',

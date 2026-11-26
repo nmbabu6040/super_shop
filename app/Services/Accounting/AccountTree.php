@@ -23,7 +23,7 @@ final class AccountTree
         $knownIds = $accounts->pluck('id');
 
         $childrenByParent = $accounts->groupBy(
-            static fn(Account $account): int => $knownIds->contains($account->parent_id) ? (int) $account->parent_id : 0
+            static fn (Account $account): int => $knownIds->contains($account->parent_id) ? (int) $account->parent_id : 0
         );
 
         $orderedRows = [];

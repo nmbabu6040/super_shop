@@ -32,7 +32,8 @@ final class JournalService
     public function __construct(
         private readonly FiscalCalendarService $fiscalCalendar,
         private readonly DocumentNumberService $documentNumbers,
-    ) {}
+    ) {
+    }
 
     /**
      * Posts an entry created by the system (an event of a business module). When the same
@@ -48,7 +49,7 @@ final class JournalService
 
         $currentUserId = Auth::id();
 
-        return DB::transaction(fn(): JournalEntry => $this->persist(
+        return DB::transaction(fn (): JournalEntry => $this->persist(
             $draft,
             JournalEntryStatus::Posted,
             $currentUserId === null ? null : (int) $currentUserId,
@@ -60,7 +61,7 @@ final class JournalService
      */
     public function createPending(JournalDraft $draft, User $creator): JournalEntry
     {
-        return DB::transaction(fn(): JournalEntry => $this->persist($draft, JournalEntryStatus::Pending, (int) $creator->getKey()));
+        return DB::transaction(fn (): JournalEntry => $this->persist($draft, JournalEntryStatus::Pending, (int) $creator->getKey()));
     }
 
     public function approve(JournalEntry $entry, User $approver): JournalEntry
@@ -136,7 +137,7 @@ final class JournalService
 
             $reversalDate = CarbonImmutable::parse(($date ?? now())->format('Y-m-d'));
 
-            $swappedLines = $original->lines->map(static fn(JournalEntryLine $line): JournalLineDraft => new JournalLineDraft(
+            $swappedLines = $original->lines->map(static fn (JournalEntryLine $line): JournalLineDraft => new JournalLineDraft(
                 $line->account_id,
                 $line->credit,
                 $line->debit,
@@ -246,7 +247,7 @@ final class JournalService
             throw BusinessRuleException::translated('accounting.errors.unbalanced', ['debit' => $totalDebit, 'credit' => $totalCredit]);
         }
 
-        $accountIds = array_values(array_unique(array_map(static fn(JournalLineDraft $line): int => $line->accountId, $draft->lines)));
+        $accountIds = array_values(array_unique(array_map(static fn (JournalLineDraft $line): int => $line->accountId, $draft->lines)));
         $accounts = Account::query()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         foreach ($accountIds as $accountId) {
@@ -267,8 +268,8 @@ final class JournalService
 
         $branchIds = array_values(array_unique(array_filter([
             $draft->branchId,
-            ...array_map(static fn(JournalLineDraft $line): ?int => $line->branchId, $draft->lines),
-        ], static fn(?int $branchId): bool => $branchId !== null)));
+            ...array_map(static fn (JournalLineDraft $line): ?int => $line->branchId, $draft->lines),
+        ], static fn (?int $branchId): bool => $branchId !== null)));
 
         if ($branchIds !== [] && Branch::withTrashed()->whereIn('id', $branchIds)->count() !== count($branchIds)) {
             throw BusinessRuleException::translated('accounting.errors.unknown_branch');
@@ -280,7 +281,7 @@ final class JournalService
         return new JournalDraft(
             CarbonImmutable::parse($entry->entry_date->format('Y-m-d')),
             $entry->description,
-            $entry->lines->map(static fn(JournalEntryLine $line): JournalLineDraft => new JournalLineDraft(
+            $entry->lines->map(static fn (JournalEntryLine $line): JournalLineDraft => new JournalLineDraft(
                 $line->account_id,
                 $line->debit,
                 $line->credit,

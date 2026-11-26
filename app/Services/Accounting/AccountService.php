@@ -113,7 +113,7 @@ final class AccountService
             $currentLevelIds = Account::query()
                 ->whereIn('parent_id', $currentLevelIds)
                 ->pluck('id')
-                ->map(static fn(mixed $id): int => (int) $id)
+                ->map(static fn (mixed $id): int => (int) $id)
                 ->all();
 
             $descendantIds = [...$descendantIds, ...$currentLevelIds];

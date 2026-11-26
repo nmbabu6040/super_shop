@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\AccountingReportController;
 use App\Http\Controllers\Admin\ActiveBranchController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\BranchController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FiscalYearController;
+use App\Http\Controllers\Admin\JournalEntryController;
 use App\Http\Controllers\Admin\LocaleController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProductController;
@@ -82,6 +84,19 @@ Route::middleware(['auth', 'verified', 'active', 'staff'])->group(function (): v
         ->only(['index', 'create', 'store', 'destroy']);
     Route::post('fiscal-years/periods/{period}/close', [FiscalYearController::class, 'closePeriod'])->name('fiscal-years.periods.close');
     Route::post('fiscal-years/periods/{period}/reopen', [FiscalYearController::class, 'reopenPeriod'])->name('fiscal-years.periods.reopen');
+
+    // Journal entries are never edited or deleted: only created, approved, rejected or reversed.
+    Route::resource('journal-entries', JournalEntryController::class)
+        ->parameters(['journal-entries' => 'journal_entry'])
+        ->only(['index', 'create', 'store', 'show']);
+    Route::post('journal-entries/{journal_entry}/approve', [JournalEntryController::class, 'approve'])->name('journal-entries.approve');
+    Route::post('journal-entries/{journal_entry}/reject', [JournalEntryController::class, 'reject'])->name('journal-entries.reject');
+    Route::post('journal-entries/{journal_entry}/reverse', [JournalEntryController::class, 'reverse'])->name('journal-entries.reverse');
+
+    Route::get('reports/trial-balance', [AccountingReportController::class, 'trialBalance'])->name('reports.trial-balance');
+    Route::get('reports/trial-balance/export', [AccountingReportController::class, 'trialBalanceExport'])->name('reports.trial-balance.export');
+    Route::get('reports/general-ledger', [AccountingReportController::class, 'generalLedger'])->name('reports.general-ledger');
+    Route::get('reports/general-ledger/export', [AccountingReportController::class, 'generalLedgerExport'])->name('reports.general-ledger.export');
 
     Route::resource('users', UserController::class)->except(['show']);
     Route::post('users/{user}/restore', [UserController::class, 'restore'])->withTrashed()->name('users.restore');

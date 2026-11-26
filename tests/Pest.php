@@ -48,7 +48,7 @@ function createBranchStaff(Branch ...$branches): User
     $staffUser = User::factory()->create();
     $staffUser->assignRole(RoleName::BranchManager->value);
     $staffUser->branches()->attach(array_map(
-        static fn(Branch $branch): int => $branch->id,
+        static fn (Branch $branch): int => $branch->id,
         $branches
     ));
 
@@ -94,8 +94,7 @@ function createHeadOfficeAdmin(): User
  */
 function makeWarehousePolicy(): ModulePolicy
 {
-    return new class extends ModulePolicy
-    {
+    return new class () extends ModulePolicy {
         protected function module(): string
         {
             return 'warehouses';
