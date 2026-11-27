@@ -10,6 +10,7 @@ use App\Models\FiscalYear;
 use App\Models\JournalEntry;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\StockAdjustment;
 use App\Models\TaxRate;
 use App\Models\Unit;
 use App\Models\User;
@@ -51,6 +52,13 @@ return [
         'icon' => 'shopping-bag',
         'can' => ['viewAny', Product::class],
         'active' => 'admin.products.*',
+    ],
+    [
+        'label' => 'inventory.menu.adjustments',
+        'route' => 'admin.stock-adjustments.index',
+        'icon' => 'package',
+        'can' => ['viewAny', StockAdjustment::class],
+        'active' => 'admin.stock-adjustments.*',
     ],
     [
         'label' => 'catalog.menu.categories',

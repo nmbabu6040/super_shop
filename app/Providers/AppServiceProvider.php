@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Product;
 use App\Models\User;
+use App\Models\Warehouse;
+use App\Observers\ProductStockGuard;
+use App\Observers\WarehouseStockGuard;
 use App\Policies\ActivityLogPolicy;
 use App\Policies\RolePolicy;
 use App\Services\Settings\SettingsService;
@@ -39,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
         // Models that live outside App\Models need an explicit policy registration.
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Activity::class, ActivityLogPolicy::class);
+
+        // Stock must be dealt with before a product or a warehouse can be removed.
+        Product::observe(ProductStockGuard::class);
+        Warehouse::observe(WarehouseStockGuard::class);
 
         // Every audit entry is tagged with the branch the actor was working in.
         Activity::creating(static function (Activity $activity): void {

@@ -17,9 +17,11 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StockAdjustmentController;
 use App\Http\Controllers\Admin\TaxRateController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VariantSearchController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Support\Settings\SettingsSchema;
 use Illuminate\Support\Facades\Route;
@@ -76,6 +78,18 @@ Route::middleware(['auth', 'verified', 'active', 'staff'])->group(function (): v
     Route::post('products/{product}/restore', [ProductController::class, 'restore'])
         ->withTrashed()
         ->name('products.restore');
+
+    // Variant search for the line editors of stock documents.
+    Route::get('variants/search', VariantSearchController::class)
+        ->middleware('throttle:60,1')
+        ->name('variants.search');
+
+    // Stock documents are never edited or deleted: created, approved or rejected.
+    Route::resource('stock-adjustments', StockAdjustmentController::class)
+        ->parameters(['stock-adjustments' => 'stock_adjustment'])
+        ->only(['index', 'create', 'store', 'show']);
+    Route::post('stock-adjustments/{stock_adjustment}/approve', [StockAdjustmentController::class, 'approve'])->name('stock-adjustments.approve');
+    Route::post('stock-adjustments/{stock_adjustment}/reject', [StockAdjustmentController::class, 'reject'])->name('stock-adjustments.reject');
 
     Route::resource('accounts', AccountController::class)->except(['show']);
 
