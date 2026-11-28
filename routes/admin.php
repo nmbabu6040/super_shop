@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StockAdjustmentController;
+use App\Http\Controllers\Admin\StockLevelController;
 use App\Http\Controllers\Admin\TaxRateController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UserController;
@@ -83,6 +84,12 @@ Route::middleware(['auth', 'verified', 'active', 'staff'])->group(function (): v
     Route::get('variants/search', VariantSearchController::class)
         ->middleware('throttle:60,1')
         ->name('variants.search');
+
+    // Stock overview, batches with expiry dates and the stock ledger (read only).
+    Route::get('stock', [StockLevelController::class, 'index'])->name('stock.index');
+    Route::get('stock/batches', [StockLevelController::class, 'batches'])->name('stock.batches');
+    Route::get('stock/movements', [StockLevelController::class, 'movements'])->name('stock.movements');
+    Route::get('stock/export', [StockLevelController::class, 'export'])->name('stock.export');
 
     // Stock documents are never edited or deleted: created, approved or rejected.
     Route::resource('stock-adjustments', StockAdjustmentController::class)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'menu' => [
+        'stock' => 'Stock',
         'adjustments' => 'Stock adjustments',
     ],
 
@@ -54,6 +55,32 @@ return [
         'applied_cost' => 'Cost used',
         'value' => 'Value',
         'line_notes' => 'Line note',
+    ],
+
+    'stock' => [
+        'title' => 'Stock levels',
+        'subtitle' => 'Quantity on hand of every product in every warehouse you can see.',
+        'batches_title' => 'Batches and expiry',
+        'batches_subtitle' => 'Batches that still hold stock, earliest expiry first. "Expiring soon" means within :days days.',
+        'movements_title' => 'Stock ledger',
+        'movements_subtitle' => 'Every change of stock, newest first. Entries are never edited or deleted.',
+        'search_placeholder' => 'Name, SKU or barcode',
+        'on_hand' => 'On hand',
+        'reorder_level' => 'Reorder level',
+        'average_cost' => 'Average cost',
+        'movement_type' => 'Type',
+        'balance_after' => 'Balance',
+        'source' => 'Source',
+        'status' => [
+            'low' => 'Low stock',
+            'out' => 'Out of stock',
+            'ok' => 'In stock',
+        ],
+        'expiry' => [
+            'expired' => 'Expired',
+            'soon' => 'Expiring soon',
+            'ok' => 'Fresh',
+        ],
     ],
 
     'adjustments' => [

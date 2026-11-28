@@ -29,6 +29,14 @@ return [
             'label' => 'Invited staff activated their account',
             'description' => 'When someone you invited sets a password and starts using their account.',
         ],
+        'low_stock_alert' => [
+            'label' => 'Low stock',
+            'description' => 'A daily summary of products at or below their reorder level.',
+        ],
+        'expiry_alert' => [
+            'label' => 'Expiring stock',
+            'description' => 'A daily summary of batches that expired or are about to expire.',
+        ],
     ],
 
     'messages' => [
@@ -39,6 +47,14 @@ return [
         'staff_invitation_accepted' => [
             'title' => 'Invitation accepted',
             'message' => ':name has activated their account.',
+        ],
+        'low_stock_alert' => [
+            'title' => 'Low stock',
+            'message' => ':count product(s) are at or below their reorder level.',
+        ],
+        'expiry_alert' => [
+            'title' => 'Stock is expiring',
+            'message' => ':expired batch(es) have expired and :soon will expire within :days days.',
         ],
     ],
 ];

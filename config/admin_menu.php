@@ -11,6 +11,7 @@ use App\Models\JournalEntry;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\StockAdjustment;
+use App\Models\StockLevel;
 use App\Models\TaxRate;
 use App\Models\Unit;
 use App\Models\User;
@@ -54,9 +55,16 @@ return [
         'active' => 'admin.products.*',
     ],
     [
+        'label' => 'inventory.menu.stock',
+        'route' => 'admin.stock.index',
+        'icon' => 'package',
+        'can' => ['viewAny', StockLevel::class],
+        'active' => 'admin.stock.*',
+    ],
+    [
         'label' => 'inventory.menu.adjustments',
         'route' => 'admin.stock-adjustments.index',
-        'icon' => 'package',
+        'icon' => 'sliders',
         'can' => ['viewAny', StockAdjustment::class],
         'active' => 'admin.stock-adjustments.*',
     ],

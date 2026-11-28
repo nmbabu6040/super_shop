@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'menu' => [
+        'stock' => 'স্টক',
         'adjustments' => 'স্টক সমন্বয়',
     ],
 
@@ -54,6 +55,32 @@ return [
         'applied_cost' => 'ব্যবহৃত খরচ',
         'value' => 'মূল্য',
         'line_notes' => 'লাইনের মন্তব্য',
+    ],
+
+    'stock' => [
+        'title' => 'স্টক লেভেল',
+        'subtitle' => 'আপনি যেসব ওয়্যারহাউস দেখতে পারেন সেখানকার প্রতিটি পণ্যের মজুত।',
+        'batches_title' => 'ব্যাচ ও মেয়াদ',
+        'batches_subtitle' => 'স্টক আছে এমন ব্যাচ, আগে মেয়াদ শেষ হবে সেগুলো আগে। "শিগগির শেষ" মানে :days দিনের মধ্যে।',
+        'movements_title' => 'স্টক লেজার',
+        'movements_subtitle' => 'স্টকের প্রতিটি পরিবর্তন, নতুনগুলো আগে। এন্ট্রি কখনো সম্পাদনা বা মোছা হয় না।',
+        'search_placeholder' => 'নাম, SKU বা বারকোড',
+        'on_hand' => 'মজুত',
+        'reorder_level' => 'রিঅর্ডার লেভেল',
+        'average_cost' => 'গড় খরচ',
+        'movement_type' => 'ধরন',
+        'balance_after' => 'জের',
+        'source' => 'উৎস',
+        'status' => [
+            'low' => 'কম স্টক',
+            'out' => 'স্টক শেষ',
+            'ok' => 'স্টক আছে',
+        ],
+        'expiry' => [
+            'expired' => 'মেয়াদ শেষ',
+            'soon' => 'শিগগির শেষ',
+            'ok' => 'ভালো',
+        ],
     ],
 
     'adjustments' => [

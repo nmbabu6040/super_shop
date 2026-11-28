@@ -26,4 +26,14 @@ return [
         'mandatory' => [],
         'permission' => 'users.view',
     ],
+    'low_stock_alert' => [
+        'channels' => ['mail', 'database'],
+        'mandatory' => [],
+        'permission' => 'inventory.view',
+    ],
+    'expiry_alert' => [
+        'channels' => ['mail', 'database'],
+        'mandatory' => [],
+        'permission' => 'inventory.view',
+    ],
 ];
